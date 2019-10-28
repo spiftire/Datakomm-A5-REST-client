@@ -30,7 +30,7 @@ public class Main {
     public static final String DKREST_RESULTS = "/dkrest/results/";
     public static final String DKREST_RESULTS_TOP = "/dkrest/results/top";
 
-    public JSONObject sendPostRequest(String path, JSONObject object) {
+    public static JSONObject sendPostRequest(String path, JSONObject object) {
         System.out.println(object);
         String url = BASE_URL + path;
         System.out.println(url);
@@ -76,7 +76,7 @@ public class Main {
         return jsonObject;
     }
 
-    public JSONObject sendGetRequest(String path) {
+    public static JSONObject sendGetRequest(String path) {
         String url = BASE_URL + path;
 
         URL urlObj = null;
@@ -117,7 +117,7 @@ public class Main {
      * @param is Inputstream to read the body from
      * @return The whole body as a string
      */
-    private String convertStreamToString(InputStream is) {
+    private static String convertStreamToString(InputStream is) {
         BufferedReader in = new BufferedReader(new InputStreamReader(is));
         StringBuilder response = new StringBuilder();
         try {
@@ -134,7 +134,7 @@ public class Main {
 
     public static void main(String[] args) {
         Main main = new Main();
-        main.sendGetRequest("/dkrest/test/get");
+        sendGetRequest("/dkrest/test/get");
 
         int a = main.randomWithRange(1, 50);
         int b = main.randomWithRange(1, 50);
@@ -143,34 +143,34 @@ public class Main {
         object.put("a", a);
         object.put("b", b);
 
-        main.sendPostRequest("/dkrest/test/post", object);
+        sendPostRequest("/dkrest/test/post", object);
 
         final String AUTH = "/dkrest/auth";
         JSONObject token = new JSONObject();
         token.put("email", EMAIL);
         token.put("phone", PHONE_NUM);
 
-        JSONObject me = main.sendPostRequest(AUTH, token);
-        JSONObject response = new JSONObject();
+        JSONObject me = sendPostRequest(AUTH, token);
+        JSONObject response;
         int sessionId = Integer.parseInt(me.get("sessionId").toString());
         System.out.println("session ID " + sessionId);
 
         int tasknum = 1;
 
-        main.sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
+        sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
 
         me.put("msg", "Hello");
-        main.sendPostRequest(DKREST_SOLVE, me);
+        sendPostRequest(DKREST_SOLVE, me);
 
         tasknum = tasknum + 1;
-        response = main.sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
+        response = sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
         String msg = response.getJSONArray(ARGUMENTS).get(0).toString();
 
         me.put("msg", msg);
-        main.sendPostRequest(DKREST_SOLVE, me);
+        sendPostRequest(DKREST_SOLVE, me);
 
         tasknum = tasknum + 1;
-        response = main.sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
+        response = sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
         JSONArray jsonArray = response.getJSONArray(ARGUMENTS);
 
         int multi = 1;
@@ -180,10 +180,10 @@ public class Main {
         }
 
         me.put("result", multi);
-        main.sendPostRequest(DKREST_SOLVE, me);
+        sendPostRequest(DKREST_SOLVE, me);
 
         tasknum = tasknum + 1;
-        response = main.sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
+        response = sendGetRequest(GET_TASK + tasknum + SESSION_ID_TAG + sessionId);
         String md5 = response.getJSONArray(ARGUMENTS).get(0).toString();
 
         boolean found = false;
@@ -196,9 +196,9 @@ public class Main {
             }
         }
         me.put("pin", i);
-        main.sendPostRequest(DKREST_SOLVE, me);
+        sendPostRequest(DKREST_SOLVE, me);
 
-        response = main.sendGetRequest(GET_TASK + 2016 + SESSION_ID_TAG + sessionId);
+        response = sendGetRequest(GET_TASK + 2016 + SESSION_ID_TAG + sessionId);
         String ipAddr = response.getJSONArray(ARGUMENTS).get(0).toString();
         String subNet = response.getJSONArray(ARGUMENTS).get(1).toString();
         IPv4 iPv4 = new IPv4(ipAddr, subNet);
@@ -206,10 +206,10 @@ public class Main {
         String availableIp = availableIpS.get(0);
 
         me.put("ip", availableIp);
-        main.sendPostRequest(DKREST_SOLVE,me);
+        sendPostRequest(DKREST_SOLVE,me);
 
-        main.sendGetRequest(DKREST_RESULTS +sessionId);
-        main.sendGetRequest(DKREST_RESULTS_TOP);
+        sendGetRequest(DKREST_RESULTS +sessionId);
+        sendGetRequest(DKREST_RESULTS_TOP);
 
     }
 
